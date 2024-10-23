@@ -4,9 +4,10 @@ from pdf_generation import PDFGenerator
 import requests
 from time import sleep  # Correct import for sleep function
 
+
 def main():
-    save_url = 'http://localhost:5000/save-recording'
-    
+    save_url = "http://localhost:5000/save-recording"
+
     # Wait for a few seconds before sending the request
     wait_time = 10  # Time in seconds
     print(f"Waiting for {wait_time} seconds before saving the recording...")
@@ -16,14 +17,14 @@ def main():
     response = requests.post(save_url)
 
     if response.status_code == 200:
-        audio_path = response.json().get('audio_path')
+        audio_path = response.json().get("audio_path")
         if not audio_path:
             print("Error: No audio path received from the server.")
             return
 
         print(f"Audio saved as: {audio_path}")
-        output_pdf = 'medical_summary.pdf'
-        hf_token = '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'
+        output_pdf = "medical_summary.pdf"
+        hf_token = "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"
 
         # Step 1: Transcribe the audio
         transcriber = AudioTranscriber()
@@ -44,7 +45,8 @@ def main():
         pdf_generator.generate_pdf(extracted_summary, output_pdf)
 
     else:
-        print("Failed to save recording. Status code:", response.status_code)
+        print("Failed to save recording.Status code:", response.status_code)
+
 
 if __name__ == "__main__":
     main()
