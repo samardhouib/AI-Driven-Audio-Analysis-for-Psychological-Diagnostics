@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Recorder</title>
+    <style>
+        /* Same styling as before */
+        /* General body styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            background: url('https://austincareerinstitute.edu/wp-content/uploads/2023/12/ma-ai-scaled.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.85);
+            padding: 20px;
+            border-radius: 16px;
+            max-width: 300px;
+            text-align: center;
+        }
+
+        .btn {
+            padding: 12px;
+            border-radius: 50%;
+            font-size: 18px;
+            width: 60px;
+            height: 60px;
+        }
+
+        /* PDF link section */
+        #pdfLink {
+            margin-top: 20px;
+            display: none;
+            color: #00796b;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Recorder</h1>
+        <div class="audio-recorder">
+            <button id="recordBtn" class="btn btn-primary">🎙️</button>
+            <button id="stopBtn" class="btn btn-secondary" disabled>⏹️</button>
+            <button id="saveBtn" class="btn btn-success" disabled>💾</button>
+            <form id="durationForm" class="duration-form">
+                <input type="number" id="duration" name="duration" value="5" min="1">
+            </form>
+            <div id="pdfLink">
+                <a href="#" id="pdfDownloadLink" target="_blank">Download Medical Summary PDF</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('recordBtn').onclick = function() {
+            const duration = document.getElementById('duration').value;
+            fetch('/start-recording', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'duree=' + encodeURIComponent(duration)
+            }).then(response => response.json())
+              .then(data => {
+                if (data.status === "Recording started") {
+                    document.getElementById('recordBtn').disabled = true;
+                    document.getElementById('stopBtn').disabled = false;
+                }
+            });
+        };
+
+        document.getElementById('stopBtn').onclick = function() {
+            fetch('/stop-recording', { method: 'POST' })
+              .then(response => response.json())
+              .then(data => {
+                if (data.status === "Recording stopped") {
+                    document.getElementById('stopBtn').disabled = true;
+                    document.getElementById('saveBtn').disabled = false;
+                }
+            });
+        };
+
+        document.getElementById('saveBtn').onclick = function() {
+            fetch('/save-recording', { method: 'POST' })
+              .then(response => response.json())
+              .then(data => {
+                if (data.status === "Recording saved") {
+                    const pdfUrl = data.pdf_url;
+                    document.getElementById('pdfDownloadLink').href = pdfUrl;
+                    document.getElementById('pdfLink').style.display = 'block';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error.message);
+            });
+        };
+    </script>
+</body>
+</html>
